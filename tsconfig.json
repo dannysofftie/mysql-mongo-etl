@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "es2018",
+        "lib": [
+            "es2018",
+            "es2015",
+            "es2017"
+        ],
+        "module": "commonjs",
+        "outDir": "../server-dist",
+        "rootDir": "./",
+        "removeComments": false,
+        "downlevelIteration": true,
+        "strict": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "noImplicitThis": false,
+        "alwaysStrict": true,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
