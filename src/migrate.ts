@@ -37,6 +37,17 @@ export class Migrate {
         if (this.models === undefined) {
             throw new Error(`Call retrieveModels to get MySQL models!`);
         }
+        try {
+            const files = await fs.readdirSync(path.join(__dirname, `../files/`));
+            if (files.length) {
+                for await (const file of files) {
+                    fs.unlinkSync(path.join(__dirname, `../files/${file}`));
+                }
+            }
+        } catch {
+            fs.mkdirSync(path.join(__dirname, `../files/`));
+        }
+        // fs.unlinkSync(path.join(__dirname, `../files/${/[\s\S]+/g}.json`));
         for await (const model of this.models) {
             const modelData = await database.query(`select * from ${model}`);
             fs.writeFileSync(path.join(__dirname, `../files/${model}.json`), JSON.stringify(modelData));
@@ -48,5 +59,23 @@ export class Migrate {
                 .toString()
                 .split('.')[1] + 'ms\nMapping into MongoDB collections ....',
         );
+    }
+
+    /**
+     * Generate MongoDB Schemas with corresponding data types as from MySQL
+     *
+     * @memberof Migrate
+     */
+    public async generateMongoSchemas(): Promise<void> {
+        //
+    }
+
+    /**
+     * Write / populate retrieved data into MongoDB, using generated Schemas
+     *
+     * @memberof Migrate
+     */
+    public async populateMongo(): Promise<void> {
+        //
     }
 }
