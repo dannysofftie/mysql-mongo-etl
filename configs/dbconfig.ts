@@ -31,9 +31,7 @@ class Database {
      */
     public query(sql: string, params?: Array<string | number> | any): Promise<object[]> {
         return new Promise((resolve, reject) => {
-            typeof params === 'undefined'
-                ? this.conn.query(sql, (err, results) => (err ? reject(err) : resolve(results)))
-                : this.conn.query(sql, params, (err, results) => (err ? reject(err) : resolve(results)));
+            typeof params === 'undefined' ? this.conn.query(sql, (err, results) => (err ? reject(err) : resolve(results))) : this.conn.query(sql, params, (err, results) => (err ? reject(err) : resolve(results)));
         });
     }
 
