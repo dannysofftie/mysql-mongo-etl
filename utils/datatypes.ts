@@ -1,0 +1,16 @@
+export default {
+    nvarchar: 'String',
+    int: 'Number',
+    json: 'Array',
+    text: 'String',
+    tinyint: 'Number',
+    varchar: 'String',
+    timestamp: 'Date',
+    datetime: 'Date',
+    enum: 'Enum',
+    date: 'Date',
+    double: 'Number',
+    longtext: 'String',
+    binary: 'Boolean',
+    float: 'Number',
+};
