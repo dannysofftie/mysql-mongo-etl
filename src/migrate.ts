@@ -1,8 +1,7 @@
-import { database } from '../configs/dbconfig';
+import { database } from './configs/dbconfig';
 import * as fs from 'fs';
 import * as path from 'path';
-import datatypes from '../utils/datatypes';
-import { Schema, Types } from 'mongoose';
+import datatypes from './utils/datatypes';
 
 /**
  * Database migration utility. WIll migrate data from MySQL to MongoDb,
@@ -14,12 +13,14 @@ import { Schema, Types } from 'mongoose';
  */
 export class Migrate {
     private models: string | any[];
-    private path: string;
-    private modelsPath: string;
+    private datafilesdir: string;
+    private modelsdirectory: string;
+    private modelschemas: Map<string, string>;
 
     constructor() {
-        this.path = path.join(__dirname, `../files/`);
-        this.modelsPath = path.join(__dirname, `../models/`);
+        this.datafilesdir = path.join(__dirname, `../data-files/`);
+        this.modelsdirectory = path.join(__dirname, `../mongo-models/`);
+        this.modelschemas = new Map();
     }
 
     /**
@@ -44,19 +45,19 @@ export class Migrate {
             throw new Error(`Call retrieveModels to get MySQL models!`);
         }
         try {
-            const files = await fs.readdirSync(this.path);
+            const files = await fs.readdirSync(this.datafilesdir);
             if (files.length) {
                 for await (const file of files) {
-                    fs.unlinkSync(this.path + file);
+                    fs.unlinkSync(this.datafilesdir + file);
                 }
             }
         } catch {
-            fs.mkdirSync(this.path);
+            fs.mkdirSync(this.datafilesdir);
         }
 
         for await (const model of this.models) {
             const modelData = await database.query(`select * from ${model}`);
-            fs.writeFileSync(`${this.path + model}.json`, JSON.stringify(modelData));
+            fs.writeFileSync(`${this.datafilesdir + model}.json`, JSON.stringify(modelData));
         }
         console.log(
             `Found ${this.models.length} models and ` + 'wrote into json files in ' + Math.floor(process.uptime()) + 's and ',
@@ -73,31 +74,42 @@ export class Migrate {
      * @memberof Migrate
      */
     public async generateMongoSchemas(): Promise<void> {
-        const schemaFiles: string[] = fs.readdirSync(this.path);
-        if (schemaFiles.length < 1) {
+        const schemafiles: string[] = fs.readdirSync(this.datafilesdir);
+        if (schemafiles.length < 1) {
             throw new Error('Empty directory!');
         }
 
-        for await (const schema of schemaFiles) {
-            let modelName: string = schema.split('.')[0];
-            const definition: any[] = await database.query(`describe ${modelName}`);
-            if (modelName.indexOf('_') !== -1) {
-                modelName = modelName.split('_').join('');
+        try {
+            // delete previously generated models if any
+            const models = fs.readdirSync(this.modelsdirectory);
+            models.forEach((model) => {
+                fs.unlinkSync(this.modelsdirectory + model);
+            });
+            // tslint:disable-next-line:no-empty
+        } catch (error) {}
+
+        for await (const schemafile of schemafiles) {
+            let modelname: string = schemafile.split('.')[0];
+            const definition: any[] = await database.query(`describe ${modelname}`);
+            if (modelname.indexOf('_') !== -1) {
+                modelname = modelname.split('_').join('');
             }
-            modelName = modelName.slice(0, 1).toUpperCase() + modelName.slice(1);
+            modelname = modelname.slice(0, 1).toUpperCase() + modelname.slice(1);
+            // add key value pairs to modelschemas, to map data-files to their corresponding mongo-model files
+            this.modelschemas.set(schemafile, modelname);
             try {
-                fs.mkdirSync(this.modelsPath);
+                fs.mkdirSync(this.modelsdirectory);
             } catch {
-                // do nothing if models directory exists
+                // do nothing if `models` directory exists
             } finally {
-                const model: fs.WriteStream = fs.createWriteStream(`${this.modelsPath + modelName}.ts`);
+                const model: fs.WriteStream = fs.createWriteStream(`${this.modelsdirectory + modelname}.ts`);
                 model.write(`import { Schema, model } from 'mongoose';\n\n`);
 
-                let modelDefinition: string = '';
+                let modeldefinition: string = '';
 
                 for await (const field of definition) {
                     const datatype = field.Type.indexOf('(') !== -1 ? field.Type.split('(')[0] : field.Type;
-                    modelDefinition += `
+                    modeldefinition += `
                     ${field.Field}: {
                             type: ${datatypes[datatype]},
                             required: ${field.Null === 'YES' ? false : true},
@@ -105,8 +117,8 @@ export class Migrate {
                     },`;
                 }
 
-                model.write(`const ${modelName} = new Schema({${modelDefinition}});`);
-                model.write(`\n\n\n\nexport default model('${modelName}', ${modelName});\n`);
+                model.write(`const ${modelname} = new Schema({${modeldefinition}});`);
+                model.write(`\n\n\n\nexport default model('${modelname}', ${modelname});\n`);
             }
         }
     }
@@ -114,9 +126,15 @@ export class Migrate {
     /**
      * Write / populate retrieved data into MongoDB, using generated Schemas
      *
+     * @returns {Promise<void>}
      * @memberof Migrate
      */
     public async populateMongo(): Promise<void> {
-        //
+        if (this.modelschemas.size) {
+            for (const datafile of this.modelschemas) {
+                const modeldata: string[] = JSON.parse(fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8'));
+                console.log(modeldata);
+            }
+        }
     }
 }

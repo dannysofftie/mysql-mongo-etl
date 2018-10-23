@@ -8,4 +8,5 @@ const d = (async () => {
     await migrate.retrieveModels();
     await migrate.retrieveMysqlData();
     await migrate.generateMongoSchemas();
+    await migrate.populateMongo();
 })();

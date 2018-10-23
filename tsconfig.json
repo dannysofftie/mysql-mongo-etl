@@ -8,7 +8,7 @@
             "es2017"
         ],
         "module": "commonjs",
-        "outDir": "../server-dist",
+        "outDir": "../dist",
         "rootDir": "./",
         "removeComments": false,
         "downlevelIteration": true,

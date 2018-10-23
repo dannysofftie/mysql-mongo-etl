@@ -1,5 +1,4 @@
 node_modules/
-files/
+data-files/
 .env
-.vscode/
-models/
+mongo-models/
