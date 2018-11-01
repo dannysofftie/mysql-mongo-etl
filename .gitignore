@@ -1,4 +1,4 @@
 node_modules/
 data-files/
 .env
-mongo-models/
+mongo-*/

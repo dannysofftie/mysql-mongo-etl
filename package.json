@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DannySofftie/mysql-mongo-migrate.git"
+    "url": "git+https://github.com/dannysofftie/mysql-mongo-migrate.git"
   },
   "keywords": [
     "mysql",
@@ -19,9 +19,9 @@
   "author": "Danny Sofftie",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DannySofftie/mysql-mongo-migrate/issues"
+    "url": "https://github.com/dannysofftie/mysql-mongo-migrate/issues"
   },
-  "homepage": "https://github.com/DannySofftie/mysql-mongo-migrate#readme",
+  "homepage": "https://github.com/dannysofftie/mysql-mongo-migrate#readme",
   "dependencies": {
     "mongoose": "^5.2.17",
     "mysql": "^2.16.0"
