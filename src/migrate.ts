@@ -121,7 +121,7 @@ export class Migrate {
      */
     public async generateMongoSchemas(): Promise<void> {
         const schemafiles: string[] = fs.readdirSync(this.datafilesdir);
-        if (schemafiles.length < 1) {
+        if (!schemafiles.length) {
             throw new Error('Empty directory!');
         }
 
