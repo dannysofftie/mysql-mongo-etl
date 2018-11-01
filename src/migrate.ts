@@ -12,19 +12,62 @@ import datatypes from './utils/datatypes';
  * @class Migrate
  */
 export class Migrate {
+    /**
+     * Hold name of the models to be generated
+     *
+     * @private
+     * @type {(string | any[])}
+     * @memberof Migrate
+     */
     private models: string | any[];
+
+    /**
+     * Directory where data is saved in json format. File names correspond to MySQL table names
+     *
+     * @private
+     * @type {string}
+     * @memberof Migrate
+     */
     private datafilesdir: string;
+
+    /**
+     * Directory where generated models will be stored
+     *
+     * @private
+     * @type {string}
+     * @memberof Migrate
+     */
     private modelsdirectory: string;
+
+    /**
+     * Store collection model names and their corresonding data files
+     *
+     * @private
+     * @type {Map<string, string>}
+     * @memberof Migrate
+     */
     private modelschemas: Map<string, string>;
+
+    /**
+     * Controllers path,
+     *
+     * @private
+     * @type {string}
+     * @memberof Migrate
+     */
+    private controllerspath: string;
 
     constructor() {
         this.datafilesdir = path.join(__dirname, `../data-files/`);
         this.modelsdirectory = path.join(__dirname, `../mongo-models/`);
+        this.controllerspath = path.join(__dirname, `../mongo-controllers/`);
         this.modelschemas = new Map();
     }
 
     /**
-     * Retrieve all model names from provided database
+     * Get table names from the selected / provided database.
+     *
+     * Will populate `this.models` property.
      *
      * @memberof Migrate
      */
@@ -36,7 +79,7 @@ export class Migrate {
     }
 
     /**
-     * Retrieve data for each model from MySQL
+     * Retrieve data for each model from MySQL, and generate corresponding data file in json.
      *
      * @memberof Migrate
      */
@@ -69,7 +112,10 @@ export class Migrate {
     }
 
     /**
-     * Generate MongoDB Schemas with corresponding data types as from MySQL
+     * Generate MongoDB Schemas with corresponding data types as from MySQL. These schemas will used to populate data into MongoDB.
+     *
+     * Can be used later for another project, or deleted if not needed elsewhere anyways. Most common use case will be when taking over
+     * a Node.js project using TypeScript.
      *
      * @memberof Migrate
      */
@@ -124,17 +170,41 @@ export class Migrate {
     }
 
     /**
-     * Write / populate retrieved data into MongoDB, using generated Schemas
+     * Write / populate retrieved data into MongoDB, using previously generated Schemas and json data files.
      *
      * @returns {Promise<void>}
      * @memberof Migrate
      */
     public async populateMongo(): Promise<void> {
+        try {
+            fs.mkdirSync(this.controllerspath);
+            // delete previously generated schema data and import files if any
+            const controllers = fs.readdirSync(this.controllerspath);
+            controllers.forEach((controller) => {
+                fs.unlinkSync(this.controllerspath + controller);
+            });
+            // tslint:disable-next-line:no-empty
+        } catch {}
+
         if (this.modelschemas.size) {
+            const controller = fs.createWriteStream(this.controllerspath + 'generated-schema-and-data.ts');
+
+            // generate imports
             for (const datafile of this.modelschemas) {
-                const modeldata: string[] = JSON.parse(fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8'));
-                console.log(modeldata);
+                controller.write(`import ${datafile[1]} from '${this.modelsdirectory + datafile[1]}';\n`);
             }
+
+            // put new lines after imports to make the code readable
+            controller.write('\n\nconst x = (async () => {\n');
+
+            for (const datafile of this.modelschemas) {
+                const modeldata: string = fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8');
+                controller.write(`await ${datafile[1]}.insertMany(\n${modeldata}\n).catch((e) => e);\n`);
+            }
+
+            // close async function
+            controller.write('})();\n');
+            console.debug('Done generating imports');
         }
     }
 }
