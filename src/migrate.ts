@@ -73,7 +73,7 @@ export class Migrate {
      */
     public async retrieveModels(): Promise<void> {
         const modelInfo = await database.query(`show full tables where Table_Type = 'BASE TABLE'`);
-        this.models = modelInfo.map((res) => {
+        this.models = modelInfo.map(res => {
             return res[Object.keys(res)[0]];
         });
     }
@@ -107,7 +107,7 @@ export class Migrate {
             process
                 .uptime()
                 .toString()
-                .split('.')[1] + 'ms\nMapping into MongoDB collections ....',
+                .split('.')[1] + 'ms\nMapping into MongoDB collections ....'
         );
     }
 
@@ -128,7 +128,7 @@ export class Migrate {
         try {
             // delete previously generated models if any
             const models = fs.readdirSync(this.modelsdirectory);
-            models.forEach((model) => {
+            models.forEach(model => {
                 fs.unlinkSync(this.modelsdirectory + model);
             });
             // tslint:disable-next-line:no-empty
@@ -180,7 +180,7 @@ export class Migrate {
             fs.mkdirSync(this.controllerspath);
             // delete previously generated schema data and import files if any
             const controllers = fs.readdirSync(this.controllerspath);
-            controllers.forEach((controller) => {
+            controllers.forEach(controller => {
                 fs.unlinkSync(this.controllerspath + controller);
             });
             // tslint:disable-next-line:no-empty
