@@ -1,7 +1,8 @@
-import { database } from './configs/dbconfig';
 import * as fs from 'fs';
 import * as path from 'path';
 import datatypes from './utils/datatypes';
+import { MongoClient } from 'mongodb';
+import { mongoConfig, dbname, database } from './configs';
 
 /**
  * Database migration utility. WIll migrate data from MySQL to MongoDb,
@@ -49,18 +50,17 @@ export class Migrate {
     private modelschemas: Map<string, string>;
 
     /**
-     * Controllers path,
+     * Mongodb connection object
      *
      * @private
-     * @type {string}
+     * @type {MongoClient}
      * @memberof Migrate
      */
-    private controllerspath: string;
+    private mongoclient: MongoClient;
 
     constructor() {
         this.datafilesdir = path.join(__dirname, `../data-files/`);
         this.modelsdirectory = path.join(__dirname, `../mongo-models/`);
-        this.controllerspath = path.join(__dirname, `../mongo-controllers/`);
         this.modelschemas = new Map();
     }
 
@@ -176,35 +176,26 @@ export class Migrate {
      * @memberof Migrate
      */
     public async populateMongo(): Promise<void> {
-        try {
-            fs.mkdirSync(this.controllerspath);
-            // delete previously generated schema data and import files if any
-            const controllers = fs.readdirSync(this.controllerspath);
-            controllers.forEach(controller => {
-                fs.unlinkSync(this.controllerspath + controller);
-            });
-            // tslint:disable-next-line:no-empty
-        } catch {}
-
         if (this.modelschemas.size) {
-            const controller = fs.createWriteStream(this.controllerspath + 'generated-schema-and-data.ts');
+            this.mongoclient = await MongoClient.connect(
+                mongoConfig(),
+                { useNewUrlParser: true }
+            );
 
-            // generate imports
-            for (const datafile of this.modelschemas) {
-                controller.write(`import ${datafile[1]} from '${this.modelsdirectory + datafile[1]}';\n`);
+            const db = this.mongoclient.db(dbname);
+
+            for await (const datafile of this.modelschemas) {
+                const modeldata = fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8');
+                // console.log(datafile[1].toLowerCase());
+                if (Array.from(JSON.parse(modeldata)).length) {
+                    const collection = db.collection(datafile[1].toLowerCase());
+                    collection.insertMany(Array.from(JSON.parse(modeldata)), { ordered: true }, function(err, result) {
+                        console.log('Inserted ' + Array.from(JSON.parse(modeldata)).length + ' documents into the ' + datafile[1].toLowerCase() + ' collection.');
+                    });
+                }
             }
 
-            // put new lines after imports to make the code readable
-            controller.write('\n\nconst x = (async () => {\n');
-
-            for (const datafile of this.modelschemas) {
-                const modeldata: string = fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8');
-                controller.write(`await ${datafile[1]}.insertMany(\n${modeldata}\n).catch((e) => e);\n`);
-            }
-
-            // close async function
-            controller.write('})();\n');
-            console.debug('Done generating imports');
+            console.debug('Dumping into mongo database. Empty MySQL schemas were ignored.');
         }
     }
 }

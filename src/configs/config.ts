@@ -9,3 +9,5 @@ export function mysqlConfig(): string {
 export function mongoConfig(): string {
     return `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:27017/${process.env.MONGO_DATABASE}`;
 }
+
+export const dbname = process.env.MONGO_DATABASE;
