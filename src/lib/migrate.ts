@@ -55,8 +55,8 @@ export class Migrate {
     private mongodb: mongo.Db;
 
     constructor(options: { mysqlconn: Database; mongodb: mongo.Db }) {
-        this.datafilesdir = path.join(__dirname, `../../data-files/`);
-        this.modelsdirectory = path.join(__dirname, `../../mongo-models/`);
+        this.datafilesdir = path.join(process.cwd(), `/data-files/`);
+        this.modelsdirectory = path.join(process.cwd(), `/generated-schema-models/`);
         this.modelschemas = new Map();
         this.mysqldb = options.mysqlconn;
         this.mongodb = options.mongodb;
@@ -194,7 +194,16 @@ export class Migrate {
             if (counter === this.modelschemas.size) {
                 console.log('\n');
                 spinner.succeed('Complete! Dumped into MongoDB. Empty MySQL schemas were ignored.');
-
+                try {
+                    const files = await fs.readdirSync(this.datafilesdir);
+                    if (files.length) {
+                        for await (const file of files) {
+                            fs.unlinkSync(this.datafilesdir + file);
+                        }
+                    }
+                } catch (e) {
+                    //
+                }
                 process.exit();
             }
         }
