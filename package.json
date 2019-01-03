@@ -1,8 +1,8 @@
 {
     "name": "mysql-mongo-migrate",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.",
-    "main": "dist/index.js",
+    "main": "index.js",
     "scripts": {
         "start": "ts-node-dev --respawn --transpileOnly --no-notify src/index.ts",
         "migrate": "node ."
