@@ -4,11 +4,21 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 function mysqlConfig(options) {
-    return `mysql://${options.mysqlusername.trim()}:${options.mysqlpassword.trim()}@${options.mysqlhost.trim()}:3306/${options.mysqldatabase.trim()}?connectionLimit=10&dateStrings=true`;
+    try {
+        return `mysql://${options.mysqlusername.trim()}:${options.mysqlpassword.trim()}@${options.mysqlhost.trim()}:3306/${options.mysqldatabase.trim()}?connectionLimit=10&dateStrings=true`;
+    }
+    catch (e) {
+        return process.exit();
+    }
 }
 exports.mysqlConfig = mysqlConfig;
 function mongoConfig(options) {
-    return `mongodb://${options.mongousername.trim()}:${options.mongopassword.trim()}@${options.mongohost.trim()}:27017/${options.mongodatabase.trim()}`;
+    try {
+        return `mongodb://${options.mongousername.trim()}:${options.mongopassword.trim()}@${options.mongohost.trim()}:27017/${options.mongodatabase.trim()}`;
+    }
+    catch (e) {
+        return process.exit();
+    }
 }
 exports.mongoConfig = mongoConfig;
 __export(require("./mysqlconf"));
