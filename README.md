@@ -13,7 +13,7 @@ Will allow migrations from and to remote sites.
 2. Install dependencies
     > npm install
 3. Make it happen :wink:
-    > npm migrate
+    > npm run migrate
 
 ---
 
