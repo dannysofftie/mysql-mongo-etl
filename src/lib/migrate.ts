@@ -200,6 +200,7 @@ export class Migrate {
                         for await (const file of files) {
                             fs.unlinkSync(this.datafilesdir + file);
                         }
+                        fs.rmdirSync(this.datafilesdir);
                     }
                 } catch (e) {
                     //
