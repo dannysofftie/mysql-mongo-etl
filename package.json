@@ -1,6 +1,6 @@
 {
     "name": "mysql-mongo-migrate",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "A Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.",
     "bin": {
         "mysql-mongo-migrate": "index.js"
@@ -26,19 +26,16 @@
     },
     "homepage": "https://github.com/dannysofftie/mysql-mongo-migrate#readme",
     "dependencies": {
-        "inquirer": "^6.2.1",
         "mongoose": "^5.4.1",
         "mysql": "^2.16.0",
         "ora": "^3.0.0",
         "prompts": "^2.0.1"
     },
     "devDependencies": {
-        "@types/inquirer": "0.0.43",
         "@types/mongoose": "^5.2.17",
         "@types/mysql": "^2.15.5",
         "@types/ora": "^3.0.0",
         "@types/prompts": "^1.2.0",
-        "dotenv": "^6.0.0",
         "ts-node-dev": "^1.0.0-pre.30",
         "typescript": "^3.0.3"
     }

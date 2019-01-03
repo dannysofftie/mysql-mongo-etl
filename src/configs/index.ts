@@ -1,6 +1,3 @@
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
 export interface IMysqlConfig {
     mysqlusername: string;
     mysqlhost: string;
