@@ -21,7 +21,7 @@ export class MongoConnection {
                 { useNewUrlParser: true },
                 (err, client) => {
                     if (err) {
-                        spinner.fail(`MongoDB connection error ${err.message}`);
+                        spinner.fail(`MongoDB connection error ${err.message}`).stop();
                         process.exit();
                     }
                     spinner.succeed('MongoDB connection established. Press any key to continue. \n').stop();

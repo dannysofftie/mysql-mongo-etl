@@ -57,8 +57,8 @@ const schemaPrompts = [
     {
         type: 'text',
         name: 'generateschemas',
-        message: 'Generate Typescript Mongoose schema models?',
-        initial: 'false',
+        message: 'Generate Typescript Mongoose schema models? y for yes and any other key for no',
+        initial: 'y',
     },
 ];
 
@@ -67,16 +67,17 @@ const schemaPrompts = [
     const mysqlConn = await new Database(mysqlConfig(await prompts(mysqlPrompts)));
     // @ts-ignore
     const mongoConn = await new MongoConnection(await prompts(mongoPrompts));
-    await mongoConn.connect();
+    await mongoConn.connect().catch((e) => process.exit());
 
     const migrate = await new Migrate({ mysqlconn: mysqlConn, mongodb: mongoConn.database });
     await migrate.retrieveModels();
-
-    // @ts-ignore
-    const schema = await prompts(schemaPrompts);
     await migrate.retrieveMysqlData();
-    if (Boolean(schema.generateschemas) === true) {
-        await migrate.generateMongoSchemas();
-    }
-    await migrate.populateMongo();
+    // @ts-ignore
+    // const schema = await prompts(schemaPrompts);
+
+    // if (schema.generateschemas === 'y' || schema.generateschemas === 'yes') {
+    await migrate.generateMongoSchemas();
+    // }
+
+    await migrate.populateMongo().catch((e) => process.exit());
 })();

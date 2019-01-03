@@ -55,7 +55,7 @@ export class Migrate {
     private mongodb: mongo.Db;
 
     constructor(options: { mysqlconn: Database; mongodb: mongo.Db }) {
-        this.datafilesdir = path.join(process.cwd(), `/data-files/`);
+        this.datafilesdir = path.join(process.cwd(), `/json-data-files/`);
         this.modelsdirectory = path.join(process.cwd(), `/generated-schema-models/`);
         this.modelschemas = new Map();
         this.mysqldb = options.mysqlconn;

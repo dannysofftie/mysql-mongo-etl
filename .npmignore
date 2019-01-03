@@ -1,6 +1,7 @@
 data-files
 
-mongo-*
+json-data-files
+generated-schema-models
 package-lock.json
 
 *.log

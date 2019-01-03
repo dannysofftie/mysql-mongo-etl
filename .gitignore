@@ -1,5 +1,4 @@
-node_modules/
-data-files/
-.env
-mongo-*/
+node_modules
+json-data-files
+generated-schema-models
 package-lock.json
