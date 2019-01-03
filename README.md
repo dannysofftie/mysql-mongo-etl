@@ -15,6 +15,42 @@ Will allow migrations from and to remote sites.
 3. Make it happen :wink:
     > npm migrate
 
+---
+
+Issues might occur if you don't have authentication set up in your MongoDB database, as read and write roles are required when inserting bulk data into MongoDB.
+
+Follow below steps to enable authentication in your server:
+
+> This set up is for Linux distros only. Check online for your operating system if not a linux distro.
+
+-   Uncomment the following code block at the bottom of `/etc/mongo.conf`
+
+    ```bash
+    $> sudo vi /etc/mongo.conf
+
+       # security:
+       #      authorization: enabled
+    ```
+
+-   Login to your server and create a user for your database.
+
+    ```bash
+    $>  mongo
+    >   use databaseName
+    >   db.createUser({user: "username", pwd: "password", role: [{roles: "readWrite", db: "databaseName"}]})
+
+    ```
+
+    _Replace with your preferred credentials. You will use them to do migration in the other steps_
+
+-   Exit the mongo shell and restart mongod service.
+
+    ```bash
+    $>  sudo service restart mongo
+    ```
+
+    You should be ready to migrate your data now.
+
 ### Roadmap
 
 -   [x] Retrieve MySQL database models and data
