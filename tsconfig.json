@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "baseUrl": ".",
-        "target": "es2015",
+        "target": "es2018",
         "lib": ["es2018", "es2015", "es2017"],
         "module": "commonjs",
-        "outDir": "./dist",
+        "outDir": "./",
         "rootDir": "./src",
         "removeComments": false,
         "downlevelIteration": true,
