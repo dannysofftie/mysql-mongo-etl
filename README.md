@@ -8,6 +8,8 @@ Will allow migrations from and to remote sites.
 
 ## Migrate your existing MySQL data into MongoDB
 
+Open terminal in your working directory and .....
+
 **Method I**
 
 1. Clone project
