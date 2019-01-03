@@ -8,12 +8,21 @@ Will allow migrations from and to remote sites.
 
 ## Migrate your existing MySQL data into MongoDB
 
+**Method I**
+
 1. Clone project
     > git clone https://github.com/dannysofftie/mysql-mongo-migrate.git
 2. Install dependencies
     > npm install
 3. Make it happen :wink:
     > npm run migrate
+
+**Method II**
+
+1. Install package globally
+    > npm i -g mysql-mongo-migrate
+2. Run command
+    > \$> mysql-mongo-migrate
 
 ---
 

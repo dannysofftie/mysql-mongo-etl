@@ -24,7 +24,7 @@ export class Database {
                 spinner.fail(`Connection error ,${err.message}`);
                 process.exit();
             }
-            spinner.succeed('MySQL connection established. Press any key to continue. \n').stop();
+            spinner.succeed('MySQL connection established. Press tab key to continue. \n').stop();
         });
     }
 
