@@ -1,9 +1,8 @@
+#!/usr/bin/env node
 import * as prompts from 'prompts';
-import { Database, mysqlConfig, mongoConfig } from './configs';
+import { Database, mysqlConfig } from './configs';
 import { MongoConnection } from './configs/mongoconf';
 import { Migrate } from './lib/migrate';
-import { MongoClient } from 'mongodb';
-import * as ora from 'ora';
 
 const mysqlPrompts = [
     {
