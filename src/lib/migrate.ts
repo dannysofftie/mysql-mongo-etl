@@ -1,12 +1,13 @@
 import * as fs from 'fs';
+import * as mongo from 'mongodb';
 import * as path from 'path';
-import datatypes from './utils/datatypes';
-import { MongoClient } from 'mongodb';
-import { mongoConfig, dbname, database } from './configs';
+import { Database } from '../configs';
+import datatypes from './datatypes';
+import * as ora from 'ora';
 
 /**
  * Database migration utility. WIll migrate data from MySQL to MongoDb,
- * MySQL database name will be retained. All MySQL table names will be mapped to MongoDb collections,
+ * MySQL this.mysqldb name will be retained. All MySQL table names will be mapped to MongoDb collections,
  * MySQL model relationships will not be reinforced since MongoDB does not support schema relationships
  *
  * @export
@@ -49,31 +50,28 @@ export class Migrate {
      */
     private modelschemas: Map<string, string>;
 
-    /**
-     * Mongodb connection object
-     *
-     * @private
-     * @type {MongoClient}
-     * @memberof Migrate
-     */
-    private mongoclient: MongoClient;
+    private mysqldb: Database;
 
-    constructor() {
-        this.datafilesdir = path.join(__dirname, `../data-files/`);
-        this.modelsdirectory = path.join(__dirname, `../mongo-models/`);
+    private mongodb: mongo.Db;
+
+    constructor(options: { mysqlconn: Database; mongodb: mongo.Db }) {
+        this.datafilesdir = path.join(__dirname, `../../data-files/`);
+        this.modelsdirectory = path.join(__dirname, `../../mongo-models/`);
         this.modelschemas = new Map();
+        this.mysqldb = options.mysqlconn;
+        this.mongodb = options.mongodb;
     }
 
     /**
-     * Get table names from the selected / provided database.
+     * Get table names from the selected / provided this.mysqldb.
      *
      * Will populate `this.models` property.
      *
      * @memberof Migrate
      */
     public async retrieveModels(): Promise<void> {
-        const modelInfo = await database.query(`show full tables where Table_Type = 'BASE TABLE'`);
-        this.models = modelInfo.map(res => {
+        const modelInfo = await this.mysqldb.query(`show full tables where Table_Type = 'BASE TABLE'`);
+        this.models = modelInfo.map((res: { [x: string]: any }) => {
             return res[Object.keys(res)[0]];
         });
     }
@@ -99,7 +97,7 @@ export class Migrate {
         }
 
         for await (const model of this.models) {
-            const modelData = await database.query(`select * from ${model}`);
+            const modelData = await this.mysqldb.query(`select * from ${model}`);
             fs.writeFileSync(`${this.datafilesdir + model}.json`, JSON.stringify(modelData));
         }
         console.log(
@@ -107,7 +105,7 @@ export class Migrate {
             process
                 .uptime()
                 .toString()
-                .split('.')[1] + 'ms\nMapping into MongoDB collections ....'
+                .split('.')[1] + 'ms\nMapping into MongoDB collections ....',
         );
     }
 
@@ -128,7 +126,7 @@ export class Migrate {
         try {
             // delete previously generated models if any
             const models = fs.readdirSync(this.modelsdirectory);
-            models.forEach(model => {
+            models.forEach((model) => {
                 fs.unlinkSync(this.modelsdirectory + model);
             });
             // tslint:disable-next-line:no-empty
@@ -136,7 +134,7 @@ export class Migrate {
 
         for await (const schemafile of schemafiles) {
             let modelname: string = schemafile.split('.')[0];
-            const definition: any[] = await database.query(`describe ${modelname}`);
+            const definition: any[] = await this.mysqldb.query(`describe ${modelname}`);
             if (modelname.indexOf('_') !== -1) {
                 modelname = modelname.split('_').join('');
             }
@@ -177,25 +175,28 @@ export class Migrate {
      */
     public async populateMongo(): Promise<void> {
         if (this.modelschemas.size) {
-            this.mongoclient = await MongoClient.connect(
-                mongoConfig(),
-                { useNewUrlParser: true }
-            );
-
-            const db = this.mongoclient.db(dbname);
-
+            let counter = 0;
+            const spinner = ora('Started data migration').start();
+            spinner.color = 'blue';
             for await (const datafile of this.modelschemas) {
                 const modeldata = fs.readFileSync(this.datafilesdir + datafile[0], 'utf-8');
-                // console.log(datafile[1].toLowerCase());
-                if (Array.from(JSON.parse(modeldata)).length) {
-                    const collection = db.collection(datafile[1].toLowerCase());
-                    collection.insertMany(Array.from(JSON.parse(modeldata)), { ordered: true }, function(err, result) {
-                        console.log('Inserted ' + Array.from(JSON.parse(modeldata)).length + ' documents into the ' + datafile[1].toLowerCase() + ' collection.');
-                    });
+                const data = Array.from(JSON.parse(modeldata));
+                const collectionName = datafile[1].toLowerCase();
+
+                if (data.length) {
+                    const collection = this.mongodb.collection(collectionName);
+                    await collection.insertMany(data, { ordered: true });
+                    spinner.succeed('Inserted ' + data.length + ' documents into the ' + collectionName + ' collection.');
                 }
+                counter += 1;
             }
 
-            console.debug('Dumping into mongo database. Empty MySQL schemas were ignored.');
+            if (counter === this.modelschemas.size) {
+                console.log('\n');
+                spinner.succeed('Complete! Dumped into MongoDB. Empty MySQL schemas were ignored.');
+
+                process.exit();
+            }
         }
     }
 }

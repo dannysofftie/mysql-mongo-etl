@@ -24,6 +24,6 @@ export default {
     float: 'Number',
     varbinary: 'String',
     char: 'String',
-    blob: 'String', // MongoDB limits blobs to under 16MB in size, so just be careful
+    blob: 'String', // MongoDB limits blobs to below 16MB in size, so just be careful
     set: 'Array',
 };

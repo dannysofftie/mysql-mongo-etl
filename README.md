@@ -1,6 +1,27 @@
 # MySQL to MongoDB data migration tool
 
-A Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections. Retains database name.
+A Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.
+
+Will allow migrations from and to remote sites.
+
+![mysql-to-mongo](https://user-images.githubusercontent.com/17042186/50631158-694f8780-0f54-11e9-89b4-465fc98eb2dd.gif)
+
+## Migrate your existing MySQL data into MongoDB
+
+1. Clone project
+    > git clone https://github.com/dannysofftie/mysql-mongo-migrate.git
+2. Install dependencies
+    > npm install
+3. Make it happen :wink:
+    > npm migrate
+
+### Roadmap
+
+-   [x] Retrieve MySQL database models and data
+-   [x] Generate Mongoose schemas in Typescript
+-   [x] Dump MySQL data into MongoDB
+-   [ ] Prevent duplicates in subsequent migrations
+-   [ ] Support migrations over the network
 
 ## LICENSE
 

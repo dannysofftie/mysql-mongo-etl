@@ -1,13 +1,12 @@
-import { createPool, escape, Pool } from 'mysql';
-
-import { mysqlConfig } from './config';
+import { Connection, createConnection, escape } from 'mysql';
+import * as ora from 'ora';
 
 /**
  * Database class to handle database queries
  *
  * @class Database
  */
-class Database {
+export class Database {
     /**
      * Database connection object
      *
@@ -15,10 +14,18 @@ class Database {
      * @type {Pool}
      * @memberof Database
      */
-    private conn: Pool;
+    private conn: Connection;
 
-    constructor() {
-        this.conn = createPool(mysqlConfig());
+    constructor(conf: string) {
+        this.conn = createConnection(conf);
+        const spinner = ora('Establishing MySQL connection ').start();
+        this.conn.connect((err) => {
+            if (err) {
+                spinner.fail(`Connection error ,${err.message}`);
+                process.exit();
+            }
+            spinner.succeed('MySQL connection established. Press any key to continue. \n').stop();
+        });
     }
 
     /**
@@ -31,7 +38,9 @@ class Database {
      */
     public query(sql: string, params?: Array<string | number> | any): Promise<object[]> {
         return new Promise((resolve, reject) => {
-            typeof params === 'undefined' ? this.conn.query(sql, (err, results) => (err ? reject(err) : resolve(results))) : this.conn.query(sql, params, (err, results) => (err ? reject(err) : resolve(results)));
+            typeof params === 'undefined'
+                ? this.conn.query(sql, (err, results) => (err ? reject(err) : resolve(results)))
+                : this.conn.query(sql, params, (err, results) => (err ? reject(err) : resolve(results)));
         });
     }
 
@@ -46,5 +55,3 @@ class Database {
         return escape(param);
     }
 }
-
-export const database = new Database();
