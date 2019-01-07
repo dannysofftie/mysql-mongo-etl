@@ -52,14 +52,6 @@ const mongoPrompts = [
         message: 'MongoDB database name?',
     },
 ];
-const schemaPrompts = [
-    {
-        type: 'text',
-        name: 'generateschemas',
-        message: 'Generate Typescript Mongoose schema models? y for yes and any other key for no',
-        initial: 'y',
-    },
-];
 (async () => {
     // @ts-ignore
     const mysqlConn = await new configs_1.Database(configs_1.mysqlConfig(await prompts(mysqlPrompts)));
