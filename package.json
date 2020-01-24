@@ -1,42 +1,42 @@
 {
-  "name": "mysql-mongo-etl",
-  "version": "1.3.0",
-  "description": "An ETL Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.",
-  "bin": {
-    "mysql-mongo-migrate": "index.js"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "ts-node-dev --respawn --transpileOnly --no-notify src/index.ts",
-    "migrate": "node ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dannysofftie/mysql-mongo-etl.git"
-  },
-  "keywords": [
-    "mysql",
-    "mongodb",
-    "mysql-migrate"
-  ],
-  "author": "Danny Sofftie",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dannysofftie/mysql-mongo-etl/issues"
-  },
-  "homepage": "https://github.com/dannysofftie/mysql-mongo-etl#readme",
-  "dependencies": {
-    "mongoose": "^5.8.9",
-    "mysql": "^2.18.1",
-    "ora": "^4.0.3",
-    "prompts": "^2.3.0"
-  },
-  "devDependencies": {
-    "@types/mongoose": "^5.5.43",
-    "@types/mysql": "^2.15.8",
-    "@types/ora": "^3.2.0",
-    "@types/prompts": "^2.0.3",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.7.5"
-  }
+    "name": "mysql-mongo-etl",
+    "version": "1.3.1",
+    "description": "An ETL Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.",
+    "bin": {
+        "mysql-mongo-migrate": "index.js"
+    },
+    "main": "index.js",
+    "scripts": {
+        "start": "ts-node-dev --respawn --transpileOnly --no-notify src/index.ts",
+        "migrate": "node ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dannysofftie/mysql-mongo-etl.git"
+    },
+    "keywords": [
+        "mysql",
+        "mongodb",
+        "mysql-migrate"
+    ],
+    "author": "Danny Sofftie",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dannysofftie/mysql-mongo-etl/issues"
+    },
+    "homepage": "https://github.com/dannysofftie/mysql-mongo-etl#readme",
+    "dependencies": {
+        "mongoose": "^5.8.9",
+        "mysql": "^2.18.1",
+        "ora": "^4.0.3",
+        "prompts": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/mongoose": "^5.5.43",
+        "@types/mysql": "^2.15.8",
+        "@types/ora": "^3.2.0",
+        "@types/prompts": "^2.0.3",
+        "ts-node-dev": "^1.0.0-pre.44",
+        "typescript": "^3.7.5"
+    }
 }
