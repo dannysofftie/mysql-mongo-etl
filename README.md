@@ -13,18 +13,18 @@ Open terminal in your working directory and .....
 **Method I**
 
 1. Clone project
-    > git clone https://github.com/dannysofftie/mysql-mongo-migrate.git
+   > git clone https://github.com/dannysofftie/mysql-mongo-migrate.git
 2. Install dependencies
-    > npm install
+   > npm install
 3. Make it happen :wink:
-    > npm run migrate
+   > npm run migrate
 
 **Method II**
 
 1. Install package globally
-    > npm i -g mysql-mongo-migrate
+   > npm i -g mysql-mongo-migrate
 2. Run command
-    > \$> mysql-mongo-migrate
+   > \$> mysql-mongo-migrate
 
 ---
 
@@ -34,41 +34,41 @@ Follow below steps to enable authentication in your server:
 
 > This set up is for Linux distros only. Check online for your operating system if not a linux distro.
 
--   Uncomment the following code block at the bottom of `/etc/mongo.conf`
+- Uncomment the following code block at the bottom of `/etc/mongo.conf`
 
-    ```bash
-    $> sudo vi /etc/mongo.conf
+  ```bash
+  $> sudo vi /etc/mongo.conf
 
-       # security:
-       #      authorization: enabled
-    ```
+     # security:
+     #      authorization: enabled
+  ```
 
--   Login to your server and create a user for your database.
+- Login to your server and create a user for your database.
 
-    ```bash
-    $>  mongo
-    >   use databaseName
-    >   db.createUser({user: "username", pwd: "password", role: [{roles: "readWrite", db: "databaseName"}]})
+  ```bash
+  $>  mongo
+  >   use databaseName
+  >   db.createUser({user: "username", pwd: "password", role: [{roles: "readWrite", db: "databaseName"}]})
 
-    ```
+  ```
 
-    _Replace with your preferred credentials. You will use them to do migration in the other steps_
+  _Replace with your preferred credentials. You will use them to do migration in the other steps_
 
--   Exit the mongo shell and restart mongod service.
+- Exit the mongo shell and restart mongod service.
 
-    ```bash
-    $>  sudo service restart mongo
-    ```
+  ```bash
+  $>  sudo service restart mongo
+  ```
 
-    You should be ready to migrate your data now.
+  You should be ready to migrate your data now.
 
 ### Roadmap
 
--   [x] Retrieve MySQL database models and data
--   [x] Generate Mongoose schemas in Typescript
--   [x] Dump MySQL data into MongoDB
--   [ ] Prevent duplicates in subsequent migrations
--   [ ] Support migrations over the network
+- [x] Retrieve MySQL database models and data
+- [x] Generate Mongoose schemas in Typescript
+- [x] Dump MySQL data into MongoDB
+- [ ] Prevent duplicates in subsequent migrations
+- [x] Support migrations over the network
 
 ## LICENSE
 

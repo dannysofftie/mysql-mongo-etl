@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as mongo from 'mongodb';
+import * as ora from 'ora';
 import * as path from 'path';
 import { Database } from '../configs';
 import datatypes from './datatypes';
-import * as ora from 'ora';
 
 /**
  * Database migration utility. WIll migrate data from MySQL to MongoDb,
@@ -86,7 +86,7 @@ export class Migrate {
             throw new Error(`Call retrieveModels to get MySQL models!`);
         }
         try {
-            const files = await fs.readdirSync(this.datafilesdir);
+            const files = fs.readdirSync(this.datafilesdir);
             if (files.length) {
                 for await (const file of files) {
                     fs.unlinkSync(this.datafilesdir + file);
@@ -100,13 +100,7 @@ export class Migrate {
             const modelData = await this.mysqldb.query(`select * from ${model}`);
             fs.writeFileSync(`${this.datafilesdir + model}.json`, JSON.stringify(modelData));
         }
-        console.log(
-            `Found ${this.models.length} models and ` + 'wrote into json files in ' + Math.floor(process.uptime()) + 's and ',
-            process
-                .uptime()
-                .toString()
-                .split('.')[1] + 'ms\nMapping into MongoDB collections ....',
-        );
+        console.log(`Found ${this.models.length} models and ` + 'wrote into json files in ' + Math.floor(process.uptime()) + 's and ');
     }
 
     /**
@@ -130,7 +124,7 @@ export class Migrate {
                 fs.unlinkSync(this.modelsdirectory + model);
             });
             // tslint:disable-next-line:no-empty
-        } catch (error) {}
+        } catch {}
 
         for await (const schemafile of schemafiles) {
             let modelname: string = schemafile.split('.')[0];
@@ -195,7 +189,7 @@ export class Migrate {
                 console.log('\n');
                 spinner.succeed('Complete! Dumped into MongoDB. Empty MySQL schemas were ignored.');
                 try {
-                    const files = await fs.readdirSync(this.datafilesdir);
+                    const files = fs.readdirSync(this.datafilesdir);
                     if (files.length) {
                         for await (const file of files) {
                             fs.unlinkSync(this.datafilesdir + file);
