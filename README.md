@@ -2,29 +2,43 @@
 
 A Node.js script to migrate MySQL data to MongoDB, mapping MySQL tables to MongoDB collections.
 
+Supports migrations over network, use cases:
+1. MySQL database hosted in GCP, to MongoDB hosted in Digital Ocean,
+2. MySQL local database, to MongoDB Atlas,
+3. MySQL database hosted in Linode, to local MongoDB instance,
+4. And so much more ...
+
 Will allow migrations from and to remote sites.
 
-![mysql-to-mongo](https://user-images.githubusercontent.com/17042186/50631158-694f8780-0f54-11e9-89b4-465fc98eb2dd.gif)
+![mysql-mongo-etl](https://user-images.githubusercontent.com/17042186/50631158-694f8780-0f54-11e9-89b4-465fc98eb2dd.gif)
 
 ## Migrate your existing MySQL data into MongoDB
 
-Open terminal in your working directory and .....
+Open terminal/command promt and follow any of below methods.
 
-**Method I**
+Before you continue, ensure you have [Node.js](https://nodejs.org/download) installed in your system. See [here](https://nodejs.org/download) for more instructions. If you have it installed, you can continue below.
+
+**Method I (For developers)**
 
 1. Clone project
-   > git clone https://github.com/dannysofftie/mysql-mongo-migrate.git
-2. Install dependencies
+   > git clone https://github.com/dannysofftie/mysql-mongo-etl.git
+2. Change working directory
+   > cd mysql-mongo-etl
+3. Install dependencies
    > npm install
-3. Make it happen :wink:
+4. Make it happen :wink:
    > npm run migrate
 
-**Method II**
+**Method II (This is for non-developers/non technical guys)**
 
 1. Install package globally
-   > npm i -g mysql-mongo-migrate
+   > npm install -g mysql-mongo-etl
 2. Run command
-   > \$> mysql-mongo-migrate
+   > mysql-mongo-etl
+
+---
+
+For both methods, you will be prompted to enter authentication credentials for your MySQL and MongoDB databases. Ensure you have access credentials that have read/write roles enabled, or else you will encounter errors.
 
 ---
 
@@ -34,47 +48,49 @@ Follow below steps to enable authentication in your server:
 
 > This set up is for Linux distros only. Check online for your operating system if not a linux distro.
 
-- Uncomment the following code block at the bottom of `/etc/mongo.conf`
-
-  ```bash
-  $> sudo vi /etc/mongo.conf
-
-     # security:
-     #      authorization: enabled
-  ```
 
 - Login to your server and create a user for your database.
-
+  > $ mongo
   ```bash
-  $>  mongo
-  >   use databaseName
-  >   db.createUser({user: "username", pwd: "password", role: [{roles: "readWrite", db: "databaseName"}]})
-
+   mongo~$ use databaseName
+   mongo~$ db.createUser({user: "username", pwd: "password", role: [{roles: "readWrite", db: "databaseName"}]})
   ```
 
   _Replace with your preferred credentials. You will use them to do migration in the other steps_
 
 - Exit the mongo shell and restart mongod service.
 
-  ```bash
-  $>  sudo service restart mongo
+- Uncomment the following code block at the bottom of `/etc/mongo.conf`, or add if not available.
+
+  > sudo vi /etc/mongo.conf
+
+  ```sh
+     # security:
+     #      authorization: enabled
   ```
 
-  You should be ready to migrate your data now.
+- After enabling authentication and create a user with appropriate credentials, restart your mongo instance for this to take effect
+  > sudo service restart mongo
+
+---
+
+You should be ready to migrate your data now. Follow **Method I** or **Method II** as above.
+
+---
 
 ### Roadmap
 
 - [x] Retrieve MySQL database models and data
 - [x] Generate Mongoose schemas in Typescript
-- [x] Dump MySQL data into MongoDB
-- [ ] Prevent duplicates in subsequent migrations
+- [x] Dump MySQL data to MongoDB
 - [x] Support migrations over the network
+- [ ] Prevent duplicates in subsequent migrations
 
 ## LICENSE
 
 MIT License
 
-Copyright (c) 2018 Danny Sofftie
+Copyright (c) 2018 - 2020 Danny Sofftie
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

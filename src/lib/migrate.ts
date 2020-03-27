@@ -55,8 +55,8 @@ export class Migrate {
     private mongodb: mongo.Db;
 
     constructor(options: { mysqlconn: Database; mongodb: mongo.Db }) {
-        this.datafilesdir = path.join(process.cwd(), `/json-data-files/`);
-        this.modelsdirectory = path.join(process.cwd(), `/generated-schema-models/`);
+        this.datafilesdir = path.join(process.cwd(), `/generated-json-data-files/`);
+        this.modelsdirectory = path.join(process.cwd(), `/generated-schema-model-definitions/`);
         this.modelschemas = new Map();
         this.mysqldb = options.mysqlconn;
         this.mongodb = options.mongodb;
@@ -100,7 +100,7 @@ export class Migrate {
             const modelData = await this.mysqldb.query(`select * from ${model}`);
             fs.writeFileSync(`${this.datafilesdir + model}.json`, JSON.stringify(modelData));
         }
-        console.log(`Found ${this.models.length} models and ` + 'wrote into json files in ' + Math.floor(process.uptime()) + 's and ');
+        console.log(`Found ${this.models.length} models and wrote into json files in ${Math.floor(process.uptime())} s and `);
     }
 
     /**
@@ -120,7 +120,7 @@ export class Migrate {
         try {
             // delete previously generated models if any
             const models = fs.readdirSync(this.modelsdirectory);
-            models.forEach((model) => {
+            models.forEach(model => {
                 fs.unlinkSync(this.modelsdirectory + model);
             });
             // tslint:disable-next-line:no-empty
@@ -140,19 +140,18 @@ export class Migrate {
             } catch {
                 // do nothing if `models` directory exists
             } finally {
-                const model: fs.WriteStream = fs.createWriteStream(`${this.modelsdirectory + modelname}.ts`);
+                const model = fs.createWriteStream(`${this.modelsdirectory + modelname}.ts`);
                 model.write(`import { Schema, model } from 'mongoose';\n\n`);
 
                 let modeldefinition: string = '';
 
                 for await (const field of definition) {
                     const datatype = field.Type.indexOf('(') !== -1 ? field.Type.split('(')[0] : field.Type;
-                    modeldefinition += `
-                    ${field.Field}: {
+                    modeldefinition += `${field.Field}: {
                             type: ${datatypes[datatype]},
                             required: ${field.Null === 'YES' ? false : true},
                             default: ${field.Default === 'CURRENT_TIMESTAMP' ? 'Date.now' : field.Default},
-                    },`;
+                    },\n`;
                 }
 
                 model.write(`const ${modelname} = new Schema({${modeldefinition}});`);

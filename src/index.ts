@@ -55,12 +55,12 @@ const mongoPrompts = [
 
 (async () => {
     // @ts-ignore
-    const mysqlConn = await new Database(mysqlConfig(await prompts(mysqlPrompts)));
+    const mysqlConn = new Database(mysqlConfig(await prompts(mysqlPrompts)));
     // @ts-ignore
-    const mongoConn = await new MongoConnection(await prompts(mongoPrompts));
-    await mongoConn.connect().catch((e) => process.exit());
+    const mongoConn = new MongoConnection(await prompts(mongoPrompts));
+    await mongoConn.connect().catch(e => process.exit());
 
-    const migrate = await new Migrate({ mysqlconn: mysqlConn, mongodb: mongoConn.database });
+    const migrate = new Migrate({ mysqlconn: mysqlConn, mongodb: mongoConn.database });
     await migrate.retrieveModels();
     await migrate.retrieveMysqlData();
     // @ts-ignore
@@ -70,5 +70,5 @@ const mongoPrompts = [
     await migrate.generateMongoSchemas();
     // }
 
-    await migrate.populateMongo().catch((e) => process.exit());
+    await migrate.populateMongo().catch(e => process.exit());
 })();
