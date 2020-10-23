@@ -18,7 +18,7 @@ export class MongoConnection {
         return new Promise((resolve) => {
             MongoClient.connect(
                 mongoConfig(this.options),
-                { useNewUrlParser: true },
+                { useUnifiedTopology: true, useNewUrlParser: true },
                 (err, client) => {
                     if (err) {
                         spinner.fail(`MongoDB connection error ${err.message}`).stop();
