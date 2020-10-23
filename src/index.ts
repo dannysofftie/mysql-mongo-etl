@@ -55,10 +55,10 @@ const mongoPrompts = [
 
 (async () => {
     // @ts-ignore
-    const mysqlConn = new Database(mysqlConfig(await prompts(mysqlPrompts)));
-    // @ts-ignore
     const mongoConn = new MongoConnection(await prompts(mongoPrompts));
     await mongoConn.connect().catch(e => process.exit());
+    // @ts-ignore
+    const mysqlConn = new Database(mysqlConfig(await prompts(mysqlPrompts)));
 
     const migrate = new Migrate({ mysqlconn: mysqlConn, mongodb: mongoConn.database });
     await migrate.retrieveModels();
