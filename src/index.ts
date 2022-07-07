@@ -63,12 +63,6 @@ const mongoPrompts = [
     const migrate = new Migrate({ mysqlconn: mysqlConn, mongodb: mongoConn.database });
     await migrate.retrieveModels();
     await migrate.retrieveMysqlData();
-    // @ts-ignore
-    // const schema = await prompts(schemaPrompts);
-
-    // if (schema.generateschemas === 'y' || schema.generateschemas === 'yes') {
     await migrate.generateMongoSchemas();
-    // }
-
     await migrate.populateMongo().catch(e => process.exit());
 })();
