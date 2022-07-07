@@ -1,6 +1,6 @@
 import { IMongoConfig, mongoConfig } from '.';
 import * as ora from 'ora';
-import { MongoClient, Db } from 'mongodb';
+import {Db, MongoClient} from 'mongodb';
 
 export class MongoConnection {
     public database: Db;
@@ -18,10 +18,10 @@ export class MongoConnection {
         return new Promise((resolve) => {
             MongoClient.connect(
                 mongoConfig(this.options),
-                { useNewUrlParser: true },
+                { useNewUrlParser: true, useUnifiedTopology: true },
                 (err, client) => {
                     if (err) {
-                        spinner.fail(`MongoDB connection error ${err.message}`).stop();
+                        spinner.fail(`MongoDB connection error. ${err.message}`).stop();
                         process.exit();
                     }
                     spinner.succeed('MongoDB connection established. Press any key to continue. \n').stop();

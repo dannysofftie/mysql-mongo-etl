@@ -97,7 +97,8 @@ export class Migrate {
         }
 
         for await (const model of this.models) {
-            const modelData = await this.mysqldb.query(`select * from ${model}`);
+            const modelData = await this.mysqldb.query(`SELECT *
+                                                        FROM ${model}`);
             fs.writeFileSync(`${this.datafilesdir + model}.json`, JSON.stringify(modelData));
         }
         console.log(`Found ${this.models.length} models and wrote into json files in ${Math.floor(process.uptime())} s and `);
@@ -197,8 +198,9 @@ export class Migrate {
                     }
                 } catch (e) {
                     //
+                } finally {
+                    process.exit();
                 }
-                process.exit();
             }
         }
     }
